@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Build demo/index.html: Scam Shield v5 in one self-contained file.
+"""Build demo/index.html: Scam Shield v9 in one self-contained file.
 
-Exports model_v5.npz to browser form:
+Exports model_v9.npz to browser form:
 - vocabularies as raw text blocks (entries joined by \\x01, a character that
   cannot occur inside an entry), read via textContent at load;
 - idf / coef float32 arrays as base64 (exact float32 bytes -> exact parity);
 - intercept / threshold as JSON numbers.
-The inference core in the page is a line-for-line port of predict_v5.py.
+The inference core in the page is a line-for-line port of predict_v9.py.
 """
 import base64, json, os
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.dirname(HERE)
-m = np.load(os.path.join(SRC, "model_v5.npz"), allow_pickle=False)
+m = np.load(os.path.join(SRC, "model_v9.npz"), allow_pickle=False)
 
 def b64f32(a):
     return base64.b64encode(np.asarray(a, dtype="<f4").tobytes()).decode()
@@ -154,7 +154,7 @@ const CHAR_VOCAB = document.getElementById("charVocab").textContent.split("\u000
 const WV = new Map(WORD_VOCAB.map((t, i) => [t, i]));
 const CV = new Map(CHAR_VOCAB.map((t, i) => [t, i]));
 
-// Port of predict_v5.py: TOK = \b\w[\w']+\b (unicode). Candidates are runs of
+// Port of predict_v9.py: TOK = \b\w[\w']+\b (unicode). Candidates are runs of
 // word characters / apostrophes; strip edge apostrophes, keep length >= 2.
 function tokenizeWords(low) {
   const cands = low.match(/[\p{L}\p{N}\p{M}_']+/gu) || [];

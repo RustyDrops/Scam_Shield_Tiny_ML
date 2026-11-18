@@ -1,0 +1,264 @@
+{
+  "model": "Scam Shield v9 \u2014 v5's exact recipe (word 1-2g 15k + char_wb 3-5g 15k TF-IDF, LR C=4.0, group-balanced weights, threshold by v5's rule: max recall s.t. validation legit FPR <= 1.0%) + ADDED data only: conversational scam group (romance + grandparent from seeds_v8, wrong_number_opener NEW in seeds_v9) and conversational legit group (gen_v9_data templates); charity_relief + package_delivery held out as the fresh exam",
+  "held_out_families": [
+    "charity_relief",
+    "package_delivery"
+  ],
+  "threshold_rule": "v5 rule: max recall s.t. validation legit FPR <= 0.010 (no cap variant)",
+  "threshold_rule_satisfied": true,
+  "validation_legit_n": 1256,
+  "train_rows": {
+    "group_0": 3162,
+    "group_1": 449,
+    "group_2": 11033,
+    "group_3": 11033,
+    "group_4": 1932,
+    "group_5": 1701,
+    "group_6": 697,
+    "group_7": 900,
+    "group_8": 1083
+  },
+  "combined_train_rows": 31990,
+  "validation_at_chosen_threshold": {
+    "threshold": 0.6,
+    "scam_recall": 0.9366,
+    "legit_false_positive_rate": 0.0096,
+    "precision_scam": 0.9961,
+    "accuracy": 0.9516,
+    "tp": 3059,
+    "fp": 12,
+    "tn": 1244,
+    "fn": 207,
+    "n": 4522
+  },
+  "test_modern_once": {
+    "threshold": 0.6,
+    "scam_recall": 0.9784,
+    "legit_false_positive_rate": 0.0044,
+    "precision_scam": 0.9987,
+    "accuracy": 0.9823,
+    "tp": 2314,
+    "fp": 3,
+    "tn": 675,
+    "fn": 51,
+    "n": 3043
+  },
+  "test_uci_once": {
+    "threshold": 0.6,
+    "scam_recall": 0.9792,
+    "legit_false_positive_rate": 0.0044,
+    "precision_scam": 0.9691,
+    "accuracy": 0.9935,
+    "tp": 94,
+    "fp": 3,
+    "tn": 675,
+    "fn": 2,
+    "n": 774
+  },
+  "test_family2026_once": {
+    "threshold": 0.6,
+    "scam_recall": 0.9926,
+    "n": 538,
+    "per_family": {
+      "amazon": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "dmv": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "ftc_agent": {
+        "recall": 1.0,
+        "n": 14
+      },
+      "irs_refund": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "job_check": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "jury_duty": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "task_job": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "toll": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "voter": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "whatsapp_code": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "wrong_number": {
+        "recall": 0.6667,
+        "n": 12
+      }
+    }
+  },
+  "raw_form_stress_test": {
+    "n": 2365,
+    "v9_recall_raw_form": 0.9564,
+    "v5_recall_raw_form": 0.9463
+  },
+  "test_transactional_once": {
+    "v9": {
+      "threshold": 0.6,
+      "legit_fp_rate": 0.0035,
+      "legit_n": 285,
+      "legit_fp_count": 1,
+      "scam_recall": 1.0,
+      "scam_n": 111
+    },
+    "v5_same_rows": {
+      "threshold": 0.77,
+      "legit_fp_rate": 0.0035,
+      "legit_n": 285,
+      "legit_fp_count": 1,
+      "scam_recall": 1.0,
+      "scam_n": 111
+    }
+  },
+  "probe_after": {
+    "v9": {
+      "n": 34,
+      "ge_threshold": 2,
+      "ge_0.70": 1,
+      "ge_0.30": 4,
+      "mean_prob": 0.0872
+    },
+    "v5": {
+      "n": 34,
+      "ge_threshold": 1,
+      "ge_0.70": 1,
+      "ge_0.30": 5,
+      "mean_prob": 0.1053
+    }
+  },
+  "fam9_internal_test_once": {
+    "grandparent": {
+      "recall_v9": 0.9857,
+      "recall_v5": 0.0143,
+      "n": 70
+    },
+    "romance": {
+      "recall_v9": 0.9714,
+      "recall_v5": 0.0143,
+      "n": 70
+    },
+    "wrong_number_opener": {
+      "recall_v9": 0.0,
+      "recall_v5": 0.0,
+      "n": 70
+    }
+  },
+  "new_eval_obfuscated_D_once": {
+    "scam_recall_v9": 0.935,
+    "scam_recall_v5": 0.92,
+    "scam_n": 800,
+    "per_transform": {
+      "homoglyph+vowel_drop": {
+        "recall_v9": 0.9037,
+        "recall_v5": 0.8889,
+        "n": 135
+      },
+      "homoglyph_hi": {
+        "recall_v9": 0.8731,
+        "recall_v5": 0.8582,
+        "n": 134
+      },
+      "letter_repeat_hi": {
+        "recall_v9": 0.9699,
+        "recall_v5": 0.9699,
+        "n": 133
+      },
+      "symbol_leet+letter_repeat": {
+        "recall_v9": 0.9552,
+        "recall_v5": 0.9328,
+        "n": 134
+      },
+      "symbol_leet_hi": {
+        "recall_v9": 0.9474,
+        "recall_v5": 0.9323,
+        "n": 133
+      },
+      "vowel_drop_hi": {
+        "recall_v9": 0.9618,
+        "recall_v5": 0.9389,
+        "n": 131
+      }
+    },
+    "legit_fp_rate_v9": 0.01,
+    "legit_fp_rate_v5": 0.0067,
+    "legit_n": 300
+  },
+  "new_eval_heldout_family_once": {
+    "scam_recall_v9": 0.9429,
+    "scam_recall_v5": 0.9,
+    "scam_n": 140,
+    "per_family": {
+      "charity_relief": {
+        "recall_v9": 0.8857,
+        "recall_v5": 0.8,
+        "n": 70
+      },
+      "package_delivery": {
+        "recall_v9": 1.0,
+        "recall_v5": 1.0,
+        "n": 70
+      }
+    }
+  },
+  "model_v9_npz_bytes": 317338,
+  "keeper_gates": {
+    "modern_recall >= 0.965": true,
+    "legit_fpr <= 0.005": true,
+    "txn_legit_fp <= 0.01": true,
+    "obf_D_recall > v5": true,
+    "heldout_family_recall >= v5": true
+  },
+  "auto_keep_check": {
+    "rule": "keep v9 iff ALL pre-registered gates pass: modern recall >= 0.965, legit FPR <= 0.005, txn legit FP <= 0.01, obf-D recall > v5 on set D, held-out-family (charity_relief+package_delivery) recall >= v5",
+    "keep_v9": true
+  },
+  "comparison_table": [
+    {
+      "version": "v5",
+      "threshold": 0.77,
+      "modern_imc25_test_recall": 0.9674,
+      "uci_test_recall": 0.9583,
+      "legit_fpr": 0.0029,
+      "txn_legit_fp_rate": 0.0035,
+      "txn_scam_recall": 1.0,
+      "model_bytes": 316854,
+      "obf_D_recall": 0.92,
+      "hf_charity_package_recall": 0.9,
+      "fam9_romance_recall": 0.0143,
+      "fam9_grandparent_recall": 0.0143
+    },
+    {
+      "version": "v9",
+      "threshold": 0.6,
+      "modern_imc25_test_recall": 0.9784,
+      "uci_test_recall": 0.9792,
+      "legit_fpr": 0.0044,
+      "txn_legit_fp_rate": 0.0035,
+      "txn_scam_recall": 1.0,
+      "model_bytes": 317338,
+      "obf_D_recall": 0.935,
+      "hf_charity_package_recall": 0.9429,
+      "fam9_romance_recall": 0.9714,
+      "fam9_grandparent_recall": 0.9857
+    }
+  ]
+}

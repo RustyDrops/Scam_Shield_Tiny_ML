@@ -1,0 +1,223 @@
+{
+  "model": "Scam Shield v6 \u2014 v5 data + recombinations + set-A obfuscation copies, voter/jury_duty families held out, word 1-2g 15k + char_wb 3-6g 35k TF-IDF, LR C=4.0, 10-group balanced weights",
+  "held_out_families": [
+    "jury_duty",
+    "voter"
+  ],
+  "train_rows": {
+    "group_0": 3162,
+    "group_1": 449,
+    "group_2": 11033,
+    "group_3": 11033,
+    "group_4": 1573,
+    "group_5": 1701,
+    "group_6": 697,
+    "group_7": 2600,
+    "group_8": 4500,
+    "group_9": 900
+  },
+  "combined_train_rows": 37648,
+  "validation_at_chosen_threshold": {
+    "threshold": 0.66,
+    "scam_recall": 0.9614,
+    "legit_false_positive_rate": 0.0082,
+    "precision_scam": 0.9976,
+    "accuracy": 0.9681,
+    "tp": 3284,
+    "fp": 8,
+    "tn": 963,
+    "fn": 132,
+    "n": 4387
+  },
+  "test_modern_once": {
+    "threshold": 0.66,
+    "scam_recall": 0.9746,
+    "legit_false_positive_rate": 0.0059,
+    "precision_scam": 0.9983,
+    "accuracy": 0.979,
+    "tp": 2305,
+    "fp": 4,
+    "tn": 674,
+    "fn": 60,
+    "n": 3043
+  },
+  "test_uci_once": {
+    "threshold": 0.66,
+    "scam_recall": 0.9583,
+    "legit_false_positive_rate": 0.0059,
+    "precision_scam": 0.9583,
+    "accuracy": 0.9897,
+    "tp": 92,
+    "fp": 4,
+    "tn": 674,
+    "fn": 4,
+    "n": 774
+  },
+  "test_family2026_once": {
+    "threshold": 0.66,
+    "scam_recall": 0.9665,
+    "n": 538,
+    "per_family": {
+      "amazon": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "dmv": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "ftc_agent": {
+        "recall": 1.0,
+        "n": 14
+      },
+      "irs_refund": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "job_check": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "jury_duty": {
+        "recall": 0.9143,
+        "n": 70
+      },
+      "task_job": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "toll": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "voter": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "whatsapp_code": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "wrong_number": {
+        "recall": 0.0,
+        "n": 12
+      }
+    }
+  },
+  "raw_form_stress_test": {
+    "n": 2365,
+    "v6_recall_raw_form": 0.9569,
+    "v5_recall_raw_form": 0.9463
+  },
+  "test_transactional_once": {
+    "v6": {
+      "threshold": 0.66,
+      "legit_fp_rate": 0.0035,
+      "legit_n": 285,
+      "legit_fp_count": 1,
+      "scam_recall": 1.0,
+      "scam_n": 111
+    },
+    "v5_reference": {
+      "legit_fp_rate": 0.0035,
+      "scam_recall": 1.0
+    }
+  },
+  "probe_after": {
+    "v6": {
+      "n": 34,
+      "ge_threshold": 1,
+      "ge_0.70": 1,
+      "ge_0.30": 4,
+      "mean_prob": 0.087
+    },
+    "v5_reference": {
+      "ge_threshold": 1,
+      "ge_0.70": 1,
+      "ge_0.30": 5,
+      "mean_prob": 0.1053
+    }
+  },
+  "new_eval_obfuscated_once": {
+    "scam_recall_v6": 0.9537,
+    "scam_recall_v5": 0.9375,
+    "scam_n": 800,
+    "per_transform": {
+      "homoglyph": {
+        "recall_v6": 0.945,
+        "recall_v5": 0.925,
+        "n": 200
+      },
+      "letter_repeat": {
+        "recall_v6": 0.97,
+        "recall_v5": 0.96,
+        "n": 200
+      },
+      "symbol_leet": {
+        "recall_v6": 0.945,
+        "recall_v5": 0.93,
+        "n": 200
+      },
+      "vowel_drop": {
+        "recall_v6": 0.955,
+        "recall_v5": 0.935,
+        "n": 200
+      }
+    },
+    "legit_fp_rate_v6": 0.0067,
+    "legit_fp_rate_v5": 0.01,
+    "legit_n": 300
+  },
+  "new_eval_heldout_family_once": {
+    "scam_recall_v6": 0.9571,
+    "scam_recall_v5": 0.9929,
+    "scam_n": 140,
+    "per_family": {
+      "jury_duty": {
+        "recall_v6": 0.9143,
+        "recall_v5": 0.9857,
+        "n": 70
+      },
+      "voter": {
+        "recall_v6": 1.0,
+        "recall_v5": 1.0,
+        "n": 70
+      }
+    }
+  },
+  "model_v6_npz_bytes": 480211,
+  "auto_keep_check": {
+    "rule": "keep v6 iff modern recall >= 0.96, FPR <= 0.005, txn legit FP <= 0.01, and >= +0.02 over v5 on BOTH the obfuscated and held-out-family sets",
+    "keep_v6": false
+  },
+  "comparison_table": [
+    {
+      "version": "v5",
+      "threshold": 0.77,
+      "modern_imc25_test_recall": 0.9674,
+      "uci_test_recall": 0.9583,
+      "legit_fpr": 0.0029,
+      "family2026_test_recall": 0.9758,
+      "raw_form_recall": 0.9463,
+      "txn_legit_fp_rate": 0.0035,
+      "txn_scam_recall": 1.0,
+      "model_bytes": 316854,
+      "obf_eval_recall": 0.9375,
+      "hf_eval_recall": 0.9929
+    },
+    {
+      "version": "v6",
+      "threshold": 0.66,
+      "modern_imc25_test_recall": 0.9746,
+      "uci_test_recall": 0.9583,
+      "legit_fpr": 0.0059,
+      "family2026_test_recall": 0.9665,
+      "raw_form_recall": 0.9569,
+      "txn_legit_fp_rate": 0.0035,
+      "txn_scam_recall": 1.0,
+      "model_bytes": 480211,
+      "obf_eval_recall": 0.9537,
+      "hf_eval_recall": 0.9571
+    }
+  ]
+}

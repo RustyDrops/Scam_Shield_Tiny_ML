@@ -277,3 +277,690 @@ trained on.
 - Modern recall and raw-form recall each slipped ~1–1.7 pts (above);
   if a future version can recover them without reopening the
   transactional flaw, it should.
+
+---
+
+# v6 — pattern-recognition experiment (2026-11-18) — NOT A KEEPER, v5 stays
+
+Status: local experiment only — NOT published or uploaded anywhere.
+Trained on Google Colab (CPU runtime, MCP route; two runs — the first
+crashed on a missing bundle file, `predict_v4.py`, and was re-run
+unchanged in recipe; account balance 597.73 → 597.45 units over the
+whole window, shared account). Scripts: `obfuscate_v6.py`,
+`gen_v6_data.py`, `train_v6.py`, `run_v6_colab.py`; results:
+`metrics_v6.json`; new data under `data/v6/` (manifest there).
+
+## What v6 set out to do
+Move from memorising known scams to pattern recognition that catches
+future threats: (1) wider character features (char_wb 3–6 g, 35k,
+plus word 1–2 g 15k); (2) deterministic obfuscation augmentation —
+set A transforms (numeric leet, space splits, punctuation inserts,
+case flips, zero-width chars; txt-speak for legit copies) applied to
+4,500 scam + 900 legit training copies; (3) 2,600 novel recombinations
+(openers/bodies/CTAs mixed across seed families — texts that never
+existed as seeds); (4) two seed families (voter, jury_duty) excluded
+from ALL training and validation data as a "future scam" test.
+
+## New held-out evaluations (built before training, evaluated once)
+- **Obfuscated set** (800 IMC25 test positives + 300 UCI test ham,
+  transformed with set B mechanisms NEVER used in training: Cyrillic
+  homoglyphs, symbol leet @/$/!, letter doubling, vowel dropping):
+  **v6 recall 0.9537 vs v5 0.9375 (+1.6 pts)** — all four transforms
+  improved (homoglyph +2.0, vowel drop +2.0, symbol leet +1.5, letter
+  repeat +1.0); obfuscated-legit FP 0.67% vs v5 1.0%.
+- **Held-out-family set** (voter + jury_duty fam_test rows, 140):
+  **v6 0.9571 vs v5 0.9929 (−3.6 pts)**. Voter 1.000 for both;
+  jury_duty v6 0.9143 vs v5 0.9857. Structural caveat: v5 trained on
+  sibling templates of both families, so its baseline measures
+  template generalisation; v6's 95.7% on wholly unseen families is
+  the honest "future family" number — but the pre-registered keeper
+  rule demanded improvement over v5, and v6 does not deliver it here.
+
+## Frozen regression suites (each evaluated once, threshold 0.66)
+- Modern IMC25 recall **0.9746** (v5 0.9674, +0.7 pt) ✓ gate ≥0.96
+- Legit FPR **0.0059 (4/678)** vs v5 0.0029 — **✗ breaches the ≤0.5%
+  gate** (two extra false alarms on 2011 ham)
+- UCI recall 0.9583 (identical to v5); 2026-family overall 0.9665
+  (v5 0.9758 — includes the two deliberately untrained families)
+- Raw-form stress **0.9569** (v5 0.9463, +1.1 pts)
+- Transactional: legit FP 0.0035, scam recall 1.000 — identical to v5 ✓
+- Probe: mean prob 0.087 (v5 0.105), 1/34 ≥ threshold — same as v5
+- Size: 480,211 bytes (~0.46 MB) — under the 2 MB target ✓
+
+**Verdict: NOT a keeper — v5 remains the keeper.** The pre-registered
+rule required no regression (modern ≥96% ✓, FPR ≤0.5% ✗, txn FP ≤1%
+✓) AND clear improvement on both new sets (obfuscated +1.6 pts —
+real but under the +2 pt bar; held-out-family −3.6 pts ✗). v6's
+candidate model file was therefore not retained as a deliverable.
+What v6 proved: unseen-obfuscation robustness and unseen-family
+transfer (95.7% combined, voter perfect) are achievable at this size;
+what it cost: a doubled ham FPR at the validation-chosen threshold.
+A future v7 could try to recover the FPR with a stricter validation
+FPR cap — that would be a new pre-registered run, not a re-tune of
+this one (all v6 test numbers above are spent).
+
+## Frontier-model contact — affirmation (v6)
+Same as v1–v5: no Muse / Muse or OpenAI / Luna output was used as
+training data, labels, scores, rankings, filtering, or selection.
+All new text is deterministic code: seed-template recombination and
+mechanical character transforms. Training ran on Colab as compute
+only.
+
+---
+
+# v7 — keep v6's pattern wins, fix the false-alarm rate (2026-11-18)
+
+Status: PRE-REGISTERED — this section's design and gates were written
+BEFORE any v7 training or evaluation. Results and verdict are appended
+below the line once the single run completes. Scripts: `gen_v7_data.py`,
+`train_v7.py`, `run_v7_colab.py`; results: `metrics_v7.json`; new data
+under `data/v7/` (manifest there).
+
+## Design (fixed in advance)
+Recipe = v6's, unchanged in its wins: word 1–2 g (15k) + char_wb 3–6 g
+(35k) TF-IDF, LR C=4.0, group-balanced weights, set-A obfuscation
+augmentation (4,500 scam + 900 legit copies), cross-family seed
+recombinations. Two changes, both aimed at v6's one failure (test legit
+FPR 0.59% vs the ≤0.5% gate):
+
+1. **Stricter threshold discipline.** The operating threshold is chosen
+   on VALIDATION ONLY, maximising scam recall subject to a HARD
+   constraint: validation legit FPR ≤ 0.30% (v6 used a 1.0% cap and
+   landed at 0.82% validation / 0.59% test). The 0.30% cap is the
+   pre-registered margin under the 0.5% test gate. If no grid threshold
+   satisfies the cap, the threshold with the lowest validation FPR is
+   used and that fact is recorded.
+2. **More hard legit training data.** A new deterministic template set
+   (`gen_v7_data.py`, v5 transactional style: slot-filled code only)
+   adds legit informs — 2FA/security codes, appointment and delivery
+   reminders, bank/school/utility informs, short casual texts — as an
+   extra training group, plus a template-disjoint validation slice so
+   the stricter threshold rule sees this text style too.
+
+## Fresh held-out sets (built before training, each evaluated ONCE)
+- **Obfuscation set B-v7**: IMC25 test positives and UCI test ham NOT
+  used by v6's eval (disjoint base rows, fresh seeds), transformed with
+  the same never-trained set-B mechanisms (homoglyph, symbol leet,
+  letter repeat, vowel drop) at fresh parameter variants, including
+  some stacked pairs. v5 is scored on it once as the baseline.
+- **Held-out families**: **toll** and **task_job** are excluded from
+  ALL v7 training and validation (family rows and recombination parts).
+  voter/jury_duty were v6's exam and are spent — they return to
+  training. The exam is their v4 fam_test rows; v5 is scored on them
+  once as the baseline (v5 trained on sibling templates of both, so its
+  baseline is the template-generalisation number, as in v6).
+- **Frozen v5 suites** (modern, UCI, 2026-family, raw-form stress,
+  transactional, probe) re-evaluated once as regression.
+
+## Keeper gates (ALL must pass, fixed in advance)
+1. Modern recall ≥ 0.965
+2. Legit FPR ≤ 0.005 (modern test block)
+3. Transactional legit FP ≤ 0.01
+4. Obfuscated-B-v7 recall STRICTLY greater than v5's on the same set
+5. Held-out-family (toll + task_job) recall ≥ v5's on the same families
+
+If any gate fails: v7 is rejected, v5 stays the keeper, `model_v7.npz`
+and `predict_v7.py` are NOT retained, and there is no re-tuning against
+these spent tests.
+
+## Budget
+Colab cap for this run: 4 compute units (project authorisation 20,
+~0.7 used by the earlier v6/RA/WIR runs). CPU runtime. Runtime deleted
+in a finally block; assignments verified empty afterwards.
+
+## Frontier-model contact — affirmation (v7)
+Same as v1–v6: no Muse / Muse or OpenAI / Luna output is used as
+training data, labels, scores, rankings, filtering, or selection. All
+new text is deterministic code. Training runs on Colab as compute only.
+
+## Results (appended after the single run)
+
+Run: Google Colab CPU runtime, MCP route, single run of the
+pre-registered recipe exactly as written above (`gen_v7_data.py` data
+verified row-for-row against its manifest; `train_v7.py`;
+`run_v7_colab.py`). Account balance 595.06 → 595.06 units (0.00 at
+displayed precision; ~4-minute CPU session, cap was 4). Runtime
+deleted in a finally block; assignments verified empty afterwards.
+Threshold chosen on validation: **0.78**, and the pre-registered cap
+was satisfied outright — validation legit FPR **0.0026 ≤ 0.0030**
+(val legit n=1,160, incl. the 189 new legit-v7 rows; validation scam
+recall 0.9482). No fallback was needed.
+
+### Frozen regression suites (each evaluated once, threshold 0.78)
+- Modern IMC25 recall **0.9619** (2,275/2,365) vs v5 0.9674 — ✗ gate
+  ≥0.965 missed by 0.3 pt
+- Legit FPR **0.0029** (2/678) vs v5 0.0029 — ✓ gate ≤0.005
+- UCI recall 0.9479 (v5 0.9583); raw-form stress 0.9311 (v5 0.9463)
+- Transactional: legit FP **0.0000** (0/285, v5 0.0035) — ✓ gate
+  ≤0.01; transactional scam recall 0.991 (v5 1.000)
+- Probe: mean prob 0.052 (v5 0.105), **0/34 ≥ threshold** (v5 1/34) —
+  the cleanest legit behaviour of any version
+- 2026-family overall 0.9145 — dragged down by the deliberately
+  untrained task_job (below); every trained family is 1.000 except
+  jury_duty 0.9429 and wrong_number 0.000 (known, untuned)
+
+### Fresh held-out sets (evaluated once; v5 scored once as baseline)
+- **Obfuscation set B-v7** (800 scam / 300 legit, disjoint bases,
+  fresh variants incl. stacked pairs): v7 recall **0.9062** vs v5
+  **0.9125** (−0.6 pt) — ✗ gate (needed strictly greater). Mixed per
+  transform: stacked homoglyph+vowel_drop slightly better for v7
+  (+0.7), homoglyph and letter-repeat tied, symbol-leet variants
+  worse (−0.8 to −2.3). Obfuscated-legit FP identical: 0.33% both.
+  Unlike v6's set, B-v7 gives v7 no obfuscation edge at all.
+- **Held-out families** (toll + task_job fam_test, 140 rows): v7
+  **0.7857** vs v5 **1.0000** — ✗ gate. Toll: 1.000 for both (v7
+  catches a family it never trained on — toll language transfers).
+  **task_job: v7 0.5714 vs v5 1.0000** — the run's big miss. As
+  pre-registered, v5's baseline is template generalisation (it
+  trained on sibling task_job templates); v7's 57% is the honest
+  never-seen-family number, and it says task-scam language
+  (optimisation tasks, small trust payouts, crypto unlock deposits)
+  does NOT transfer from the other families and recombinations the
+  way toll language does.
+
+### Keeper gates
+| Gate | Result |
+|---|---|
+| Modern recall ≥ 0.965 | ✗ 0.9619 |
+| Legit FPR ≤ 0.005 | ✓ 0.0029 |
+| Transactional legit FP ≤ 0.01 | ✓ 0.0000 |
+| Obfuscated-B-v7 recall > v5 | ✗ 0.9062 vs 0.9125 |
+| Held-out-family recall ≥ v5 | ✗ 0.7857 vs 1.0000 |
+
+**Verdict: NOT a keeper — v5 remains the keeper.** Per the
+pre-registered rule, `model_v7.npz` and `predict_v7.py` are NOT
+retained and there is no re-tuning against these spent tests. The
+FPR half of the design worked exactly as registered: the 0.30%
+validation cap held on test (0.29%), transactional false alarms went
+to zero, and the hand-written probe is cleaner than v5's. What it
+cost: the higher threshold plus the legit-heavy training shaved
+recall everywhere (modern −0.6 pt vs v5, raw-form −1.5 pts), erased
+v6's obfuscation edge, and the task_job exam exposed a genuine
+unseen-family transfer gap that v6's voter/jury_duty exam did not.
+Size would have been 481,902 bytes (~0.46 MB). Full numbers:
+`metrics_v7.json`.
+
+---
+
+# v8 — midpoint threshold cap + task-scam-space training families (2026-11-18)
+
+Status: PRE-REGISTERED — this section's design and gates were written
+BEFORE any v8 training or evaluation. Results and verdict are appended
+below the line once the single run completes. Scripts: `gen_v8_data.py`,
+`train_v8.py`, `run_v8_colab.py`; seeds: `seeds_v8.json`; results:
+`metrics_v8.json`; new data under `data/v8/` (manifest there).
+
+## What v7 taught (fixed inputs to this design)
+- v7's false-alarm fix worked perfectly: test legit FPR 0.0029,
+  transactional legit FP 0.0000, cleanest probe yet (mean prob 0.052,
+  0/34 ≥ threshold). The hard-legit group (gen_v7_data) and the
+  template-disjoint legit validation slice are CREDITED and KEPT
+  unchanged in v8.
+- v7's strict 0.30% validation cap overpaid for that safety: chosen
+  threshold 0.78 cost recall everywhere (modern 0.9619 vs the 0.965
+  gate; raw-form 0.9311 vs v5 0.9463) and erased the obfuscation edge
+  on fresh set B-v7 (0.9062 vs v5 0.9125).
+- v7's held-out exam exposed a real transfer gap: never-seen
+  **task_job scored 0.5714** while toll scored 1.0000. Task/gig/
+  crypto-unlock scam language does NOT transfer from the other
+  families and recombinations.
+
+## Design (fixed in advance)
+Recipe = v7's, unchanged except the three numbered changes below:
+word 1–2 g (15k) + char_wb 3–6 g (35k) TF-IDF, LR C=4.0,
+group-balanced weights, set-A obfuscation augmentation (4,500 scam +
+900 legit copies), cross-family recombinations, v7's hard-legit
+training group AND its template-disjoint validation slice.
+
+1. **Midpoint threshold cap.** The operating threshold is chosen on
+   VALIDATION ONLY, maximising scam recall subject to validation
+   legit FPR ≤ **0.0040** — the pre-registered midpoint hypothesis
+   between v6's loose 1.0% cap (test FPR landed 0.59%, gate breach)
+   and v7's strict 0.30% (recall overpaid). If no grid threshold
+   satisfies the cap, the threshold with the lowest validation FPR is
+   used and that fact is recorded.
+2. **New TRAINING families in the task-scam space** (`seeds_v8.json`,
+   built the v4 way: deterministic slot-filled templates via
+   augment_v4, split by template — index 1 validation-only, index 3
+   test-only, the rest train). Two families, deliberately adjacent to
+   task_job's mechanics but with their own templates and vocabulary:
+   - **gig_task** — app/gig task work: product-boosting and
+     review/liking task sets in an app or chat group, small early
+     payout, level-ups, premium/VIP sets, negative-balance top-ups.
+   - **crypto_unlock** — fake exchange/wallet balances that can only
+     be released after a "verification deposit", withdrawal "tax" or
+     "unlock fee" paid in crypto; frozen-account unlock demands.
+   Sources (US-government consumer publications, public domain;
+   templates are faithful slot-templates of the script mechanics
+   these publications describe — no text copied, no LLM text):
+   - FTC Data Spotlight, "Paying to Get Paid: Gamified Job Scams
+     Drive Record Losses" (Dec 2024), ftc.gov — task sets, small
+     early payouts, deposit-to-unlock mechanics, ~20,000 task-scam
+     reports in H1 2024.
+   - FTC Consumer Alert, "How to spot and avoid task scams"
+     (2025-08-14), consumer.ftc.gov.
+   - FTC Consumer Advice, "Job Scams", consumer.ftc.gov.
+   - FBI, "Cryptocurrency Investment Fraud", fbi.gov — incl. the
+     "Cryptocurrency Job Scams" section: account frozen at
+     withdrawal, arbitrary "taxes"/"fees" demanded to unlock funds.
+   - FinCEN Alert on pig-butchering / crypto investment fraud
+     (Sep 2023) — small early withdrawals allowed, then "taxes,
+     fees or penalties" demanded before withdrawal.
+   These families join training AND recombinations (train-split
+   template parts only). task_job and toll (v7's spent exam) return
+   to normal training, as voter/jury_duty did in v7.
+3. **Fresh held-out exam families** (`seeds_v8.json`, same file,
+   built the same v4 way): **romance** and **grandparent** — never
+   used as an exam before (voter/jury_duty were v6's; toll/task_job
+   v7's — all spent). NOTE: contrary to the run brief's assumption,
+   romance/grandparent do NOT exist in seeds_v4.json (its 11 families
+   are toll, dmv, irs_refund, amazon, task_job, wrong_number,
+   jury_duty, ftc_agent, job_check, voter, whatsapp_code), so they
+   are authored NEW here in seeds_v8.json. They are excluded from
+   ALL v8 training and validation — family rows AND recombination
+   parts. The exam is generated variants of ALL their templates
+   (70 per family, v4 test-variant count). Because the families are
+   new in v8, v5 never trained on them either: v5's baseline on this
+   exam is a true never-seen-family score, not template
+   generalisation — a cleaner exam than v6/v7's. Sources:
+   - FTC Consumer Advice, "What To Know About Romance Scams",
+     consumer.ftc.gov — fake profiles, can never meet (military /
+     oil rig / abroad), money for medical bills, plane tickets,
+     visas, customs fees; crypto-investing offers; payment by wire,
+     gift-card PINs, payment apps, crypto.
+   - FTC Consumer Advice, "Family emergency scams",
+     consumer.ftc.gov, and FCC Consumer Guide, "'Grandparent'
+     Scams" — grandchild in an accident / arrested / hospitalised,
+     "don't tell Mom and Dad", a "lawyer" or bondsman takes over,
+     urgent wire / gift cards / courier cash pickup.
+   - FBI IC3 PSA I-120324-PSA (2024-12-03), "Criminals Use
+     Generative Artificial Intelligence to Facilitate Financial
+     Fraud" — voice-cloned relative in a crisis demanding immediate
+     money (the text-message form of the same script is used here).
+
+## Fresh held-out sets (built before training, each evaluated ONCE)
+- **Obfuscation set C**: base rows disjoint from BOTH v6's eval and
+  B-v7 (both selections reproduced exactly and excluded). What
+  remains of the seed-42 held-out pools is **765 IMC25 test
+  positives and 78 UCI test ham** — set C uses ALL of them (the
+  smaller legit n is a property of the remaining pool, recorded
+  here in advance; legit FP on set C is reported, not gated).
+  Transforms: the same never-trained set-B mechanisms at the B-v7
+  parameter variants (homoglyph_hi, symbol_leet_hi,
+  letter_repeat_hi, vowel_drop_hi + the two stacked pairs), fresh
+  seeds (`v8-obf-*`). v5 is scored on it once as the baseline.
+- **Held-out families**: romance + grandparent exam rows (above).
+  v5 scored once as the baseline.
+- **Frozen v5 suites** (modern, UCI, 2026-family, raw-form stress,
+  transactional, probe) re-evaluated once as regression. The
+  2026-family suite additionally reports the new training families'
+  test-split rows (gig_task / crypto_unlock template index 3).
+
+## Keeper gates (ALL must pass, fixed in advance)
+1. Modern recall ≥ 0.965
+2. Legit FPR ≤ 0.005 (modern test block)
+3. Transactional legit FP ≤ 0.01
+4. Obfuscation-C recall STRICTLY greater than v5's on set C
+5. Held-out-family (romance + grandparent) recall ≥ v5's on the
+   same families
+
+If any gate fails: v8 is rejected, v5 stays the keeper, `model_v8.npz`
+and `predict_v8.py` are NOT retained, and there is no re-tuning
+against these spent tests.
+
+## Budget
+Colab cap for this run: 4 compute units (project authorisation 20).
+CPU runtime. Runtime deleted in a finally block; assignments verified
+empty afterwards. Launch precondition: no other job's runtime active
+(Read-Aloud v3 / Write It Right v5 share the queue).
+
+## Frontier-model contact — affirmation (v8)
+Same as v1–v7: no Muse / Muse or OpenAI / Luna output is used as
+training data, labels, scores, rankings, filtering, or selection. All
+new text is deterministic code: seed templates are slot-filled by
+augment_v4 from fixed lists. Training runs on Colab as compute only.
+(Web sources above were read by the operator to ground the template
+mechanics in the cited government publications, the same standard as
+seeds_v4.json.)
+
+## Results (appended after the single run)
+
+**Verdict: v8 REJECTED — 2 of 5 gates. v5 stays the keeper.**
+`model_v8.npz` was pulled back, SHA-256 verified
+(fbfeca88…7c1, 482,176 B), then deleted per the rule above;
+`predict_v8.py` was never written. Numbers in `metrics_v8.json`.
+
+Run facts: Colab CPU runtime created in parallel with Read-Aloud
+v3's T4 GPU job (Rusty's 2026-11-18 concurrency rule — CPU jobs no
+longer queue behind GPU jobs); total driver time 236 s; runtime
+deleted in the finally block and verified gone (only the GPU
+runtime remained afterwards, untouched). Balance 593.42 → 593.32
+over the whole working window — that 0.10 delta is shared with the
+concurrent T4 job (1.15 units/hr); v8's own CPU share at
+~0.08 units/hr for a ~4-minute runtime is ≈0.00–0.01 units, far
+under the 4-unit cap. One audit fix before launch: the prepped
+driver's spec list fell back to L4/T4 GPUs if CPU assignment failed
+— removed (CPU std → CPU highmem only), since a GPU fallback would
+have breached both the budget design and GPU serialization.
+
+Threshold: the relaxed 0.40% cap WAS satisfied on validation
+(chosen 0.81, val FPR 0.0034, val recall 0.9425, val legit n=1,160)
+— but the chosen threshold came out HIGHER than v7's 0.78, so the
+midpoint hypothesis bought nothing: the binding constraint is the
+validation legit distribution, not the cap value. Test legit FPR
+0.0029 ✓, transactional legit FP 0.0000 with transactional scam
+recall 1.0000 ✓, and the cleanest probe yet (mean prob 0.049,
+0/34 ≥ threshold). The safety side of the v7/v8 line is solved;
+recall is the whole remaining problem.
+
+| Gate | v8 | v5 | Pass |
+|---|---|---|---|
+| Modern recall ≥ 0.965 | 0.9543 | 0.9674 | ✗ |
+| Legit FPR ≤ 0.005 | 0.0029 | 0.0029 | ✓ |
+| Transactional FP ≤ 0.01 | 0.0000 | 0.0035 | ✓ |
+| Obfuscation-C recall > v5 | 0.8902 | 0.9137 | ✗ |
+| Held-out-family recall ≥ v5 | 0.1429 | 0.2071 | ✗ |
+
+What the run taught:
+- **The new training families were learned** — on their own
+  template-disjoint test splits: gig_task 1.0000 (n=70),
+  crypto_unlock 0.9714 (n=70). The original gap family task_job
+  improved to 0.7429 on its test split (v7's never-seen exam had it
+  at 0.5714) — better, still the weakest trained family bar
+  jury_duty (0.4857, a regression vs v7's 0.9429 on the same suite)
+  and the deliberately untuned wrong_number (0.0, n=12).
+- **The fresh exam is a different register, and both models fail
+  it.** Romance + grandparent scam language is conversational and
+  emotional — few URLs, amounts, or scam keywords — and largely
+  evades a TF-IDF model entirely: v8 0.1429, v5 0.2071 (romance:
+  0.0857 vs 0.2000; grandparent: 0.2000 vs 0.2143). v5's edge here
+  is real but both scores are poor in absolute terms; this exam
+  measures a capability neither model has, not a tuning gap.
+- Modern recall fell for the third straight round (v5 0.9674 →
+  v7 0.9619 → v8 0.9543) and raw-form fell with it (v8 0.9205 vs
+  v5 0.9463); UCI recall 0.9375 (v5 0.9583). Obfuscation-C: v8
+  trailed v5 on every one of the six transforms. Adding groups and
+  raising the effective threshold keeps trading headline recall
+  for safety the keeper already had.
+- Obfuscation set C legit FP was 0.0000 for BOTH models (n=78, as
+  pre-registered the small remaining pool; reported, not gated).
+
+Standing conclusion after v6–v8: three consecutive candidates have
+failed against v5, each for a different diagnosed reason, and the
+v5 recipe's balance (threshold 0.77, no hard-legit group, no cap
+tuning) has not been beaten. The next lever, if any, is not another
+threshold or group change — the romance/grandparent result points
+at conversational-scam training data as the missing capability,
+and the modern-recall slide points at simplifying back toward the
+v5 recipe rather than adding to it. No v9 is pre-registered here;
+that is a fresh design decision.
+
+---
+
+# v9 — back to the v5 recipe + conversational-scam data (2026-11-18)
+
+Status: PRE-REGISTERED — this section's design and gates were written
+BEFORE any v9 data generation, training, or evaluation. Results and
+verdict are appended below the line once the single run completes.
+Scripts: `seeds_v9.json`, `gen_v9_data.py`, `train_v9.py`,
+`run_v9_colab.py`; results: `metrics_v9.json`; new data under
+`data/v9/` (manifest there).
+
+## What v6–v8 taught (fixed inputs to this design)
+- **Threshold-cap games are exhausted.** v7's 0.30% cap chose 0.78,
+  v8's 0.40% cap chose 0.81 — both HIGHER than v5's 0.77 — and modern
+  recall fell three rounds straight: v5 0.9674 → v7 0.9619 → v8
+  0.9543. The binding constraint is the validation legit
+  distribution, not the cap value. v9 therefore uses **v5's own
+  threshold rule** (max recall subject to validation legit FPR
+  ≤ 1.0%, grid 0.05–0.95 step 0.01) with NO cap variant. Safety
+  valve only: if no grid threshold satisfies the rule, the
+  lowest-validation-FPR threshold is used and that fact is
+  recorded (v5's run did not need it).
+- **The v8 fresh exam exposed a DATA gap, not a tuning gap.**
+  Conversational/emotional scams (romance, grandparent) scored
+  0.1429 (v8) / 0.2071 (v5): few URLs, amounts, or scam keywords —
+  nothing for the current features to grip. The fix is training
+  data in that register, plus matching legitimate conversational
+  data so the model learns conversational ≠ scam. For this
+  audience (seniors), the false-alarm side is the whole ballgame.
+- The v6–v8 additions (char 3–6 g 35k features, set-A obfuscation
+  copies, cross-family recombinations, v7 hard-legit group) are
+  NOT carried into v9. v9 tests one hypothesis: v5's exact recipe
+  + conversational data.
+
+## Design (fixed in advance)
+**Base = v5, exactly.** Feature config: word 1–2 g TF-IDF (15k,
+min_df 2, sublinear, v5 token pattern) ∪ char_wb 3–5 g TF-IDF
+(15k, min_df 2, sublinear); LR C=4.0, class_weight balanced,
+liblinear. Training data = v5's exact seven groups (UCI ham, UCI
+spam, IMC25 masked, IMC25 de-masked, v4 2026-family, transactional
+legit, transactional scam) with group-balanced sample weights
+extended from 7 to 9 groups by the two added groups below.
+Validation = v5's combined validation plus the added groups'
+validation slices. Threshold rule = v5's own rule (above).
+
+**Added training data — the ONLY change from v5** (all
+deterministic code, v4-style slot-filled templates via augment_v4;
+sources under "Added-data sources" below):
+
+1. **Conversational scam group** (one balanced group):
+   - **romance** and **grandparent** — v8's exam families, now
+     spent as an exam and eligible for training. Templates are the
+     seeds_v8.json families, unchanged, split BY TEMPLATE with the
+     v4 rule (index 1 → validation only, index 3 → internal test
+     only, the rest → train); variant counts 90/50/70 per template
+     (the v8 fam8 convention), fresh v9 seeds.
+   - **wrong_number_opener** — NEW family in seeds_v9.json:
+     wrong-number conversational openers that pivot to a crypto /
+     mentor / investment pitch (v4's known deliberate gap: its
+     wrong_number held-out template scored 0/12 in v4–v8 and was
+     left untuned). Same template split rule and variant counts.
+2. **Conversational legit group** (one balanced group,
+   `gen_v9_data.py`, v7 template style: slot-filled code only):
+   genuine wrong-number replies, wrong-person apologies,
+   family/friendly chat-style messages. INFORMAL ONLY — no links,
+   no asks for money, codes, or personal details (a small number of
+   ordinary family money mentions, e.g. birthday cash to a named
+   relative, are included deliberately: family talking about money
+   is not a scam tell). Split BY TEMPLATE within each category
+   (index % 4 == 1 → validation, else train; 50 variants per train
+   template, 30 per validation template), exact-match guarded
+   against all frozen validation/test keys. Volume target ≈1,500
+   train / ≈300 validation rows — comparable to the v5
+   transactional legit group (1,701 train).
+
+## Added-data sources (US government, public domain)
+Templates are faithful slot-templates of the script mechanics these
+publications describe — no text copied, no LLM text:
+- romance / grandparent: the sources already recorded in
+  seeds_v8.json (FTC "What To Know About Romance Scams"; FTC
+  "Family emergency scams"; FCC "'Grandparent' Scams" guide; FBI
+  IC3 PSA I-120324-PSA, 2024-12-03).
+- wrong_number_opener: FTC Consumer Alert, "'When are you free for
+  coffee?' Long lost friend or a scammer trying to get you to
+  respond" (2024-08-05), consumer.ftc.gov (already v4 source #10);
+  FinCEN Alert on pig-butchering / crypto investment fraud
+  (Sep 2023) — wrong-number initial contact grooming into crypto
+  investment; FBI IC3 PSA I-120324-PSA (2024-12-03).
+- charity_relief (exam): FTC Consumer Advice, "When donating,
+  support those in need, not a scammer" (consumer.ftc.gov, 2026)
+  and FTC, "Charity Scams After a Disaster" (ftc.gov) — fake
+  charities and impersonated real ones after disasters; pressure
+  to give now; payment only by gift card / wire / crypto.
+- package_delivery (exam): FTC Consumer Alert, "Think that text
+  message is from USPS? It could be a scam" (2025-04-23),
+  consumer.ftc.gov; FTC Data Spotlight, "Top Text Message Scams of
+  2024" (Apr 2025) — fake package-delivery problems the most
+  reported text scam of 2024; U.S. Postal Inspection Service,
+  "Smishing: Package Tracking Text Scams" (uspis.gov) — USPS texts
+  only on request, never with a link, never demanding a redelivery
+  fee.
+
+## Exam-family verification (charity_relief + package_delivery)
+Checked against this file, seeds_v4.json, seeds_v8.json, and all
+gen/train scripts before registration: **"charity" appears nowhere
+in any prior round** — charity_relief is a genuinely new family.
+**package_delivery has never existed as a seed-template family**
+either; DISCLOSED OVERLAP: delivery *register* is partially seen —
+v5's transactional group contains package tracking informs and
+redelivery-fee scam asks, and IMC25's modern set includes a
+delivery scam_type (≈1.7k rows pre-dedup). The exam templates are
+authored NEW, emphasising mechanics the transactional templates do
+not use (address-incomplete correction links, customs clearance
+fees, recipient-name mismatch, storage fees). The gate compares v9
+and v5 on identical rows, so the comparison is fair; the exam is
+recorded as "new family, partially seen register" — weaker than
+v8's romance/grandparent exam, and the results will be read that
+way.
+
+## Fresh held-out sets (built before training, each evaluated ONCE)
+- **Held-out families**: charity_relief + package_delivery exam
+  rows (seeds_v9.json; 70 generated variants per family from ALL
+  their templates; excluded from ALL v9 training and validation).
+  v5 scored once as the baseline.
+- **Obfuscation set D**: the seed-42 IMC25-test / UCI-test base
+  pools are EXHAUSTED (v6 800/300 + B-v7 800/300 + set C 765/78 =
+  all 2,365 test positives and all 678 test ham). Set D therefore
+  draws NEW base rows from the VALIDATION pools, never used as
+  obfuscation bases in any round: 800 IMC25 validation positives +
+  300 UCI validation ham, seeded sample (shuffle seed
+  "v9-obf-eval"). Transforms: the same never-trained set-B
+  mechanisms at the B-v7/set-C parameter variants
+  (gen_v7_data.OBF_B7), fresh per-row seeds (v9-obf-*). DISCLOSED:
+  the clean forms of these rows sat in both lineages' validation
+  sets (threshold selection only — neither v5 nor v9 trains on
+  them); the obfuscated forms are new items; both models are
+  scored once on identical rows. Legit FP on set D is reported,
+  not gated (same as set C).
+- **Trained-family internal splits (informational, NOT an exam)**:
+  romance / grandparent / wrong_number_opener template-index-3
+  rows, generated fresh for v9. Romance + grandparent recall
+  reported BY NAME for v9 and for v5 on the same rows. (v8's exam
+  rows for these families were generated from all templates with
+  v8 seeds and are spent; v9's internal rows are fresh variants of
+  the index-3 templates only.)
+- **Frozen v5 suites** (modern, UCI, 2026-family, raw-form stress,
+  transactional, probe) re-evaluated once as regression.
+
+## Keeper gates (ALL must pass, fixed in advance)
+1. Modern recall ≥ 0.965
+2. Legit FPR ≤ 0.005 (modern test block)
+3. Transactional legit FP ≤ 0.01
+4. Obfuscation-D recall STRICTLY greater than v5's on set D
+5. Held-out-family (charity_relief + package_delivery) recall
+   ≥ v5's on the same families
+
+If any gate fails: v9 is rejected, v5 stays the keeper,
+`model_v9.npz` and `predict_v9.py` are NOT retained, and there is
+no re-tuning against these spent tests.
+
+## Budget
+Colab cap for this run: 4 compute units (expect ≈0). CPU runtime
+ONLY (std → highmem; NO GPU fallback — GPU jobs stay serialized
+per the Colab CONNECTOR hard rules; CPU runs in parallel with GPU
+jobs). Runtime deleted in a finally block; verify the v9 runtime is
+gone afterwards and leave any GPU runtime untouched.
+
+## Frontier-model contact — affirmation (v9)
+Same as v1–v8: no Muse / Muse or OpenAI / Luna output is used as
+training data, labels, scores, rankings, filtering, or selection.
+All new text is deterministic code: seed templates are slot-filled
+by augment_v4 / gen_v9_data from fixed lists. Training runs on
+Colab as compute only. (Web sources above were read by the operator
+to ground the template mechanics in the cited government
+publications, the same standard as seeds_v4.json / seeds_v8.json.)
+
+## Results (appended after the single run)
+
+**Verdict: v9 is a KEEPER — all 5 gates pass. v9 replaces v5 as
+the keeper.** First candidate to beat v5 in four rounds.
+`model_v9.npz` (317,338 B, SHA-256 f24474c8…d3e8) is retained with
+`predict_v9.py`; pure-NumPy runtime parity vs sklearn verified on
+the 200-text validation sample (max probability difference
+4.9e-07). Numbers in `metrics_v9.json`.
+
+Run facts: Colab CPU runtime (std; no GPU fallback), created in
+parallel with another job's T4 GPU runtime per the concurrency
+rule — that runtime was verified untouched afterwards and the v9
+runtime deleted in the finally block. Total driver time 217 s.
+Balance 593.22 → 593.03 over the whole working window; the 0.19
+delta is shared with the concurrent T4 job (1.15 units/hr) and is
+fully explained by it — v9's own CPU share is ≈0.00–0.01 units,
+far under the 4-unit cap. Two crashed attempts preceded the
+successful run, both recorded here per the v6 precedent: (1) the
+train script's leakage assert fired on set D before any training —
+no-op transforms of validation-pool bases can reproduce a clean
+validation text byte-for-byte, a construction bug in the assert's
+assumptions, not data leakage into training; the fix was in
+gen_v9_data (no-op transforms and exact collisions with any clean
+train/validation text are excluded during the pool walk), verified
+locally against the rebuilt key sets before re-running. (2) The
+bundle was missing `predict_v4.py` (imported by probe_legit); the
+script trained and computed its evaluations in memory but crashed
+before printing or saving anything — no value from that attempt
+was observed or used in any decision, and the recipe was re-run
+unchanged. Data-construction fixes before the run, also recorded:
+wno-2 gained {NAME}/{DAY} slots (it was slot-free and yielded only
+13 unique validation variants), and the conversational-legit
+templates gained wider slot lists (legit group landed at 1,083
+train / 285 validation rows vs the ≈1,500/≈300 target; fam9
+validation 150 rows).
+
+Threshold: v5's rule was satisfied outright — chosen **0.60**
+(validation legit FPR 0.0096 ≤ 0.010, validation legit n=1,256,
+validation scam recall 0.9366). No fallback needed. This is the
+mechanism the cap rounds missed: adding conversational legit data
+to VALIDATION changed the legit distribution the rule sees, so
+the rule itself chose a much lower threshold than v5's 0.77 — and
+recall rose on every frozen suite while test FPR stayed in gate.
+
+| Gate | v9 | v5 | Pass |
+|---|---|---|---|
+| Modern recall ≥ 0.965 | 0.9784 | 0.9674 | ✓ |
+| Legit FPR ≤ 0.005 | 0.0044 | 0.0029 | ✓ |
+| Transactional FP ≤ 0.01 | 0.0035 | 0.0035 | ✓ |
+| Obfuscation-D recall > v5 | 0.9350 | 0.9200 | ✓ |
+| Held-out-family recall ≥ v5 | 0.9429 | 0.9000 | ✓ |
+
+Frozen suites (each evaluated once, threshold 0.60): UCI recall
+**0.9792** (v5 0.9583 — best of any version); 2026-family 0.9926
+(v5 0.9758), with every family at 1.000 except v4's wrong_number
+at 0.6667 (8/12, up from 0.000 in v4–v8); raw-form stress 0.9564
+(v5 0.9463); transactional scam recall 1.0000 with legit FP
+identical to v5 (1/285). Probe: mean prob 0.0872 (v5 0.1053),
+2/34 ≥ threshold (v5 1/34), 1/34 ≥ 0.70 (same as v5) — marginally
+more probe pressure at the lower threshold, still low in absolute
+terms. Obfuscation set D legit FP: v9 0.0100 vs v5 0.0067
+(reported, not gated — the one legit-side number where v9 is
+worse; bases are validation-pool ham, disclosed in the design).
+
+Trained-family internal splits (template index 3, informational):
+**romance 0.9714 (v5: 0.0143), grandparent 0.9857 (v5: 0.0143)** —
+the conversational/emotional register that scored 0.14–0.21 for
+both models on v8's exam is now captured where sibling templates
+were trained. Fresh exam: charity_relief 0.8857 (v5 0.8000),
+package_delivery 1.0000 (v5 1.0000).
+
+**The one clear failure: wrong_number_opener internal test 0.0000
+for BOTH v9 and v5 (n=70).** Training on five sibling opener
+templates did not transfer to the held-out opener template at
+all — its opening moves ("Oops, I think I have the wrong number.
+Sorry to bother you!") now sit in a register the model has also
+been taught is legitimate chat, and the pivot ("my friend taught
+me a way to make $X a month from my phone") does not outweigh
+them. The soft-opener problem survives v9 exactly as it survived
+v4; flagging it harder would likely cost real false alarms on
+genuine wrong-number texts, which this audience sends and
+receives often. Recorded as the standing known gap, not tuned
+against.
+
+Standing conclusion after v9: the winning lever was DATA on both
+sides of the conversational register, fed through v5's untouched
+recipe and threshold rule — not feature widening (v6), threshold
+caps (v7/v8), or added groups of the old kind. v9 is the keeper;
+v5's files are retained for comparison. Remaining known gaps:
+wrong_number_opener (above), password-changed/security notices
+(v5's probe caveat, unchanged), and all the standing v5
+limitations on real-world data (masked IMC25 optimism, template-
+based transactional coverage, no consented real senior corpus).

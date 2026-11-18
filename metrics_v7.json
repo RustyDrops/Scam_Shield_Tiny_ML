@@ -1,0 +1,245 @@
+{
+  "model": "Scam Shield v7 \u2014 v6 recipe (word 1-2g 15k + char_wb 3-6g 35k TF-IDF, LR C=4.0, group-balanced weights, set-A obfuscation copies, cross-family recombinations) + hard legit group (gen_v7_data) + threshold chosen on validation with legit FPR cap 0.0030; toll and task_job families held out",
+  "held_out_families": [
+    "task_job",
+    "toll"
+  ],
+  "val_fpr_cap": 0.003,
+  "val_cap_satisfied": true,
+  "validation_legit_n": 1160,
+  "train_rows": {
+    "group_0": 3162,
+    "group_1": 449,
+    "group_2": 11033,
+    "group_3": 11033,
+    "group_4": 1521,
+    "group_5": 1701,
+    "group_6": 697,
+    "group_7": 2600,
+    "group_8": 4500,
+    "group_9": 900,
+    "group_10": 1186
+  },
+  "combined_train_rows": 38782,
+  "validation_at_chosen_threshold": {
+    "threshold": 0.78,
+    "scam_recall": 0.9482,
+    "legit_false_positive_rate": 0.0026,
+    "precision_scam": 0.9991,
+    "accuracy": 0.9607,
+    "tp": 3239,
+    "fp": 3,
+    "tn": 1157,
+    "fn": 177,
+    "n": 4576
+  },
+  "test_modern_once": {
+    "threshold": 0.78,
+    "scam_recall": 0.9619,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9991,
+    "accuracy": 0.9698,
+    "tp": 2275,
+    "fp": 2,
+    "tn": 676,
+    "fn": 90,
+    "n": 3043
+  },
+  "test_uci_once": {
+    "threshold": 0.78,
+    "scam_recall": 0.9479,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9785,
+    "accuracy": 0.991,
+    "tp": 91,
+    "fp": 2,
+    "tn": 676,
+    "fn": 5,
+    "n": 774
+  },
+  "test_family2026_once": {
+    "threshold": 0.78,
+    "scam_recall": 0.9145,
+    "n": 538,
+    "per_family": {
+      "amazon": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "dmv": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "ftc_agent": {
+        "recall": 1.0,
+        "n": 14
+      },
+      "irs_refund": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "job_check": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "jury_duty": {
+        "recall": 0.9429,
+        "n": 70
+      },
+      "task_job": {
+        "recall": 0.5714,
+        "n": 70
+      },
+      "toll": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "voter": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "whatsapp_code": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "wrong_number": {
+        "recall": 0.0,
+        "n": 12
+      }
+    }
+  },
+  "raw_form_stress_test": {
+    "n": 2365,
+    "v7_recall_raw_form": 0.9311,
+    "v5_recall_raw_form": 0.9463,
+    "v6_recall_raw_form": 0.9569
+  },
+  "test_transactional_once": {
+    "v7": {
+      "threshold": 0.78,
+      "legit_fp_rate": 0.0,
+      "legit_n": 285,
+      "legit_fp_count": 0,
+      "scam_recall": 0.991,
+      "scam_n": 111
+    },
+    "v5_reference": {
+      "legit_fp_rate": 0.0035,
+      "scam_recall": 1.0
+    }
+  },
+  "probe_after": {
+    "v7": {
+      "n": 34,
+      "ge_threshold": 0,
+      "ge_0.70": 0,
+      "ge_0.30": 3,
+      "mean_prob": 0.0519
+    },
+    "v5_reference": {
+      "ge_threshold": 1,
+      "ge_0.70": 1,
+      "ge_0.30": 5,
+      "mean_prob": 0.1053
+    }
+  },
+  "new_eval_obfuscated_B_v7_once": {
+    "scam_recall_v7": 0.9062,
+    "scam_recall_v5": 0.9125,
+    "scam_n": 800,
+    "per_transform": {
+      "homoglyph+vowel_drop": {
+        "recall_v7": 0.8507,
+        "recall_v5": 0.8433,
+        "n": 134
+      },
+      "homoglyph_hi": {
+        "recall_v7": 0.8433,
+        "recall_v5": 0.8433,
+        "n": 134
+      },
+      "letter_repeat_hi": {
+        "recall_v7": 0.9549,
+        "recall_v5": 0.9549,
+        "n": 133
+      },
+      "symbol_leet+letter_repeat": {
+        "recall_v7": 0.9323,
+        "recall_v5": 0.9398,
+        "n": 133
+      },
+      "symbol_leet_hi": {
+        "recall_v7": 0.9398,
+        "recall_v5": 0.9624,
+        "n": 133
+      },
+      "vowel_drop_hi": {
+        "recall_v7": 0.9173,
+        "recall_v5": 0.9323,
+        "n": 133
+      }
+    },
+    "legit_fp_rate_v7": 0.0033,
+    "legit_fp_rate_v5": 0.0033,
+    "legit_n": 300
+  },
+  "new_eval_heldout_family_once": {
+    "scam_recall_v7": 0.7857,
+    "scam_recall_v5": 1.0,
+    "scam_n": 140,
+    "per_family": {
+      "task_job": {
+        "recall_v7": 0.5714,
+        "recall_v5": 1.0,
+        "n": 70
+      },
+      "toll": {
+        "recall_v7": 1.0,
+        "recall_v5": 1.0,
+        "n": 70
+      }
+    }
+  },
+  "model_v7_npz_bytes": 481902,
+  "keeper_gates": {
+    "modern_recall >= 0.965": false,
+    "legit_fpr <= 0.005": true,
+    "txn_legit_fp <= 0.01": true,
+    "obf_B_v7_recall > v5": false,
+    "heldout_family_recall >= v5": false
+  },
+  "auto_keep_check": {
+    "rule": "keep v7 iff ALL pre-registered gates pass: modern recall >= 0.965, legit FPR <= 0.005, txn legit FP <= 0.01, obf-B-v7 recall > v5 on set B-v7, held-out-family (toll+task_job) recall >= v5",
+    "keep_v7": false
+  },
+  "comparison_table": [
+    {
+      "version": "v5",
+      "threshold": 0.77,
+      "modern_imc25_test_recall": 0.9674,
+      "uci_test_recall": 0.9583,
+      "legit_fpr": 0.0029,
+      "family2026_test_recall": 0.9758,
+      "raw_form_recall": 0.9463,
+      "txn_legit_fp_rate": 0.0035,
+      "txn_scam_recall": 1.0,
+      "model_bytes": 316854,
+      "obf_B_v7_recall": 0.9125,
+      "hf_toll_taskjob_recall": 1.0
+    },
+    {
+      "version": "v7",
+      "threshold": 0.78,
+      "modern_imc25_test_recall": 0.9619,
+      "uci_test_recall": 0.9479,
+      "legit_fpr": 0.0029,
+      "family2026_test_recall": 0.9145,
+      "raw_form_recall": 0.9311,
+      "txn_legit_fp_rate": 0.0,
+      "txn_scam_recall": 0.991,
+      "model_bytes": 481902,
+      "obf_B_v7_recall": 0.9062,
+      "hf_toll_taskjob_recall": 0.7857
+    }
+  ]
+}
