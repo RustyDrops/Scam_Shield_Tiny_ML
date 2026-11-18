@@ -1,0 +1,174 @@
+{
+  "model": "Scam Shield v4 \u2014 TF-IDF (word 1-2g 15k + char_wb 3-5g 15k) + Logistic Regression, 5-group balanced sample weights",
+  "training_data": "UCI train split + IMC25 train positives (masked originals AND deterministic de-masked copies) + 2026-family augmentations of government-published seed templates (seeds_v4.json)",
+  "new_data_counts": {
+    "family2026_train_rows": 1932,
+    "family2026_validation_rows": 456,
+    "family2026_test_rows": 538,
+    "imc25_demasked_train_rows": 11033
+  },
+  "modern_dataset_stats": {
+    "rows_total": 33869,
+    "english": 22078,
+    "dropped_email": 6,
+    "dropped_short": 85,
+    "dropped_uci_valtest_overlap": 0,
+    "kept": 15762
+  },
+  "combined_split_sizes": {
+    "train": 27609,
+    "validation": 3594
+  },
+  "validation_at_chosen_threshold": {
+    "threshold": 0.7,
+    "scam_recall": 0.9592,
+    "legit_false_positive_rate": 0.0089,
+    "precision_scam": 0.9979,
+    "accuracy": 0.9652,
+    "tp": 2798,
+    "fp": 6,
+    "tn": 671,
+    "fn": 119,
+    "n": 3594
+  },
+  "validation_per_source_recall": {
+    "uci": 0.9278,
+    "modern": 0.967,
+    "family2026": 0.9254
+  },
+  "test_modern_once": {
+    "threshold": 0.7,
+    "scam_recall": 0.9772,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9991,
+    "accuracy": 0.9816,
+    "tp": 2311,
+    "fp": 2,
+    "tn": 676,
+    "fn": 54,
+    "n": 3043
+  },
+  "test_uci_once": {
+    "threshold": 0.7,
+    "scam_recall": 0.9479,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9785,
+    "accuracy": 0.991,
+    "tp": 91,
+    "fp": 2,
+    "tn": 676,
+    "fn": 5,
+    "n": 774
+  },
+  "test_family2026_once": {
+    "threshold": 0.7,
+    "scam_recall": 0.9777,
+    "n": 538,
+    "per_family": {
+      "amazon": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "dmv": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "ftc_agent": {
+        "recall": 1.0,
+        "n": 14
+      },
+      "irs_refund": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "job_check": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "jury_duty": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "task_job": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "toll": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "voter": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "whatsapp_code": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "wrong_number": {
+        "recall": 0.0,
+        "n": 12
+      }
+    }
+  },
+  "raw_form_stress_test": {
+    "n": 2365,
+    "v3_recall_raw_form": 0.9328,
+    "v4_recall_raw_form": 0.9628,
+    "v3_threshold": 0.66,
+    "v4_threshold": 0.7,
+    "note": "Identical de-masked rows for both models; de-masking is deterministic code (augment_v4.demask), seeded per row."
+  },
+  "comparison_table": [
+    {
+      "version": "v1",
+      "training": "UCI only",
+      "threshold": 0.56,
+      "modern_imc25_test_recall": 0.4516,
+      "uci_test_recall": 0.9167,
+      "legit_fpr": 0.0015,
+      "family2026_test_recall": null,
+      "raw_form_recall": null,
+      "model_bytes": 57541
+    },
+    {
+      "version": "v2",
+      "training": "UCI train + IMC25 positives (unweighted)",
+      "threshold": 0.72,
+      "modern_imc25_test_recall": 0.9569,
+      "uci_test_recall": 0.7604,
+      "legit_fpr": 0.0044,
+      "family2026_test_recall": null,
+      "raw_form_recall": null,
+      "model_bytes": 62670
+    },
+    {
+      "version": "v3",
+      "training": "UCI train + IMC25 positives, group-balanced weights, word+char TF-IDF 15k+15k",
+      "threshold": 0.66,
+      "modern_imc25_test_recall": 0.9742,
+      "uci_test_recall": 0.9479,
+      "legit_fpr": 0.0029,
+      "family2026_test_recall": null,
+      "raw_form_recall": 0.9328,
+      "model_bytes": 310698
+    },
+    {
+      "version": "v4",
+      "training": "v3 data + IMC25 de-masked copies + 2026-family seed augmentations (gov sources), 5-group balanced",
+      "threshold": 0.7,
+      "modern_imc25_test_recall": 0.9772,
+      "uci_test_recall": 0.9479,
+      "legit_fpr": 0.0029,
+      "family2026_test_recall": 0.9777,
+      "raw_form_recall": 0.9628,
+      "model_bytes": 315715
+    }
+  ],
+  "model_v4_npz_bytes": 315715,
+  "vocab_size": 30000,
+  "auto_keep_check": {
+    "rule": "keep v4 if modern and UCI test recall within 1pt of v3 and legit FPR no more than 0.5pt worse",
+    "keep_v4": true
+  }
+}

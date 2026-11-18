@@ -1,0 +1,93 @@
+{
+  "model": "Scam Shield v3 \u2014 TF-IDF (word 1-2g 15k + char_wb 3-5g 15k) + Logistic Regression, group-balanced sample weights",
+  "training_data": "UCI SMS Spam Collection train split (ham+spam) + IMC25 English smishing positives (train split); legitimate negatives are UCI ham only (IMC25 contains no legitimate messages)",
+  "recipe_selection": "Chosen on validation only: maximize min(UCI, modern) validation recall, tie-break combined validation recall. Validation at chosen threshold: UCI recall 0.9278, modern recall 0.9632",
+  "modern_dataset_stats": {
+    "rows_total": 33869,
+    "english": 22078,
+    "dropped_email": 6,
+    "dropped_short": 85,
+    "dropped_uci_valtest_overlap": 0,
+    "kept": 15762
+  },
+  "modern_split_sizes": {
+    "train": 11033,
+    "validation": 2364,
+    "test": 2365
+  },
+  "combined_split_sizes": {
+    "train": 14644,
+    "validation": 3138
+  },
+  "validation_at_chosen_threshold": {
+    "threshold": 0.66,
+    "scam_recall": 0.9618,
+    "legit_false_positive_rate": 0.0089,
+    "precision_scam": 0.9975,
+    "accuracy": 0.9681,
+    "tp": 2367,
+    "fp": 6,
+    "tn": 671,
+    "fn": 94,
+    "n": 3138
+  },
+  "validation_per_source_recall": {
+    "uci": 0.9278,
+    "modern": 0.9632
+  },
+  "test_modern_once": {
+    "threshold": 0.66,
+    "scam_recall": 0.9742,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9991,
+    "accuracy": 0.9793,
+    "tp": 2304,
+    "fp": 2,
+    "tn": 676,
+    "fn": 61,
+    "n": 3043
+  },
+  "test_uci_once": {
+    "threshold": 0.66,
+    "scam_recall": 0.9479,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9785,
+    "accuracy": 0.991,
+    "tp": 91,
+    "fp": 2,
+    "tn": 676,
+    "fn": 5,
+    "n": 774
+  },
+  "comparison_table": [
+    {
+      "version": "v1",
+      "training": "UCI only",
+      "threshold": 0.56,
+      "modern_imc25_test_recall": 0.4516,
+      "uci_test_recall": 0.9167,
+      "legit_fpr": 0.0015,
+      "model_bytes": 57541
+    },
+    {
+      "version": "v2",
+      "training": "UCI train + IMC25 positives (unweighted)",
+      "threshold": 0.72,
+      "modern_imc25_test_recall": 0.9569,
+      "uci_test_recall": 0.7604,
+      "legit_fpr": 0.0044,
+      "model_bytes": 62670
+    },
+    {
+      "version": "v3",
+      "training": "UCI train + IMC25 positives, group-balanced weights, word+char TF-IDF 15k+15k",
+      "threshold": 0.66,
+      "modern_imc25_test_recall": 0.9742,
+      "uci_test_recall": 0.9479,
+      "legit_fpr": 0.0029,
+      "model_bytes": 310698
+    }
+  ],
+  "model_v3_npz_bytes": 310698,
+  "vocab_size": 30000
+}

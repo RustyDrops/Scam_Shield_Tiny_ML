@@ -1,0 +1,42 @@
+{
+  "dataset": "UCI SMS Spam Collection",
+  "n_total_after_dedup": 5159,
+  "label_conflicts_dropped": 0,
+  "split_sizes": {
+    "train": 3611,
+    "validation": 774,
+    "test": 774
+  },
+  "test_spam": 96,
+  "test_ham": 678,
+  "validation_at_chosen_threshold": {
+    "threshold": 0.56,
+    "scam_recall": 0.9175,
+    "legit_false_positive_rate": 0.0089,
+    "precision_scam": 0.9368,
+    "accuracy": 0.9819,
+    "tp": 89,
+    "fp": 6,
+    "tn": 671,
+    "fn": 8,
+    "n": 774
+  },
+  "test_once": {
+    "threshold": 0.56,
+    "scam_recall": 0.9167,
+    "legit_false_positive_rate": 0.0015,
+    "precision_scam": 0.9888,
+    "accuracy": 0.9884,
+    "tp": 88,
+    "fp": 1,
+    "tn": 677,
+    "fn": 8,
+    "n": 774
+  },
+  "model_npz_bytes": 57541,
+  "onnx_bytes": null,
+  "onnx_error": "too many values to unpack (expected 2)",
+  "vocab_size": 5000,
+  "onnx_head_bytes": 50364,
+  "onnx_note": "Full-pipeline ONNX via skl2onnx failed ('too many values to unpack'); model_head.onnx is the logistic-regression head (float TF-IDF input, 50,364 bytes). Primary deployable is model.npz + predict.py, parity-checked vs sklearn (max prob diff 9.6e-08 on validation)."
+}

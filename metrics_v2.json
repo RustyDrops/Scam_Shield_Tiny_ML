@@ -1,0 +1,73 @@
+{
+  "model": "Scam Shield v2 \u2014 TF-IDF + Logistic Regression (same recipe as v1)",
+  "training_data": "UCI SMS Spam Collection train split (v1, identical) + IMC25 English smishing positives (train split)",
+  "modern_dataset_stats": {
+    "rows_total": 33869,
+    "english": 22078,
+    "dropped_email": 6,
+    "dropped_short": 85,
+    "dropped_uci_valtest_overlap": 0,
+    "kept": 15762
+  },
+  "modern_split_sizes": {
+    "train": 11033,
+    "validation": 2364,
+    "test": 2365
+  },
+  "combined_split_sizes": {
+    "train": 14644,
+    "validation": 3138
+  },
+  "validation_at_chosen_threshold": {
+    "threshold": 0.72,
+    "scam_recall": 0.9451,
+    "legit_false_positive_rate": 0.0089,
+    "precision_scam": 0.9974,
+    "accuracy": 0.9551,
+    "tp": 2326,
+    "fp": 6,
+    "tn": 671,
+    "fn": 135,
+    "n": 3138
+  },
+  "test_modern_once": {
+    "threshold": 0.72,
+    "scam_recall": 0.9569,
+    "legit_false_positive_rate": 0.0044,
+    "precision_scam": 0.9987,
+    "accuracy": 0.9655,
+    "tp": 2263,
+    "fp": 3,
+    "tn": 675,
+    "fn": 102,
+    "n": 3043
+  },
+  "test_uci_v1_comparison_once": {
+    "threshold": 0.72,
+    "scam_recall": 0.7604,
+    "legit_false_positive_rate": 0.0044,
+    "precision_scam": 0.9605,
+    "accuracy": 0.9664,
+    "tp": 73,
+    "fp": 3,
+    "tn": 675,
+    "fn": 23,
+    "n": 774
+  },
+  "v1_model_scored_on_modern_test": {
+    "threshold": 0.56,
+    "modern_scam_recall": 0.4516,
+    "legit_fpr_on_uci_test_ham": 0.0015,
+    "n_modern_pos": 2365,
+    "n_ham": 678,
+    "note": "v1 model (model.npz) scored post-hoc on the v2 modern test positives + UCI test ham; v1 was never trained or tuned on any of it"
+  },
+  "v1_reference": {
+    "threshold": 0.56,
+    "uci_test_scam_recall": 0.9167,
+    "uci_test_legit_fpr": 0.0015,
+    "model_npz_bytes": 57541
+  },
+  "model_v2_npz_bytes": 62670,
+  "vocab_size": 5000
+}

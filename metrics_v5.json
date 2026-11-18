@@ -1,0 +1,282 @@
+{
+  "model": "Scam Shield v5 \u2014 v4 recipe + transactional ask-vs-inform data (gen_v5_data.py), 7-group balanced sample weights",
+  "diagnosis_probe_v4": {
+    "note": "probe_legit.py: 34 hand-written modern legit transactional texts, EVAL ONLY, never trained on",
+    "n": 34,
+    "ge_threshold": 26,
+    "ge_0.70": 26,
+    "ge_0.30": 30,
+    "mean_prob": 0.7815
+  },
+  "new_data_counts": {
+    "txn_train_rows": 2398,
+    "txn_train_legit": 1701,
+    "txn_train_scam": 697,
+    "txn_validation_rows": 493,
+    "txn_test_rows": 396
+  },
+  "combined_train_rows": 30007,
+  "validation_at_chosen_threshold": {
+    "threshold": 0.77,
+    "scam_recall": 0.9528,
+    "legit_false_positive_rate": 0.0093,
+    "precision_scam": 0.997,
+    "accuracy": 0.9618,
+    "tp": 2969,
+    "fp": 9,
+    "tn": 962,
+    "fn": 147,
+    "n": 4087
+  },
+  "test_modern_once": {
+    "threshold": 0.77,
+    "scam_recall": 0.9674,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9991,
+    "accuracy": 0.974,
+    "tp": 2288,
+    "fp": 2,
+    "tn": 676,
+    "fn": 77,
+    "n": 3043
+  },
+  "test_uci_once": {
+    "threshold": 0.77,
+    "scam_recall": 0.9583,
+    "legit_false_positive_rate": 0.0029,
+    "precision_scam": 0.9787,
+    "accuracy": 0.9922,
+    "tp": 92,
+    "fp": 2,
+    "tn": 676,
+    "fn": 4,
+    "n": 774
+  },
+  "test_family2026_once": {
+    "threshold": 0.77,
+    "scam_recall": 0.9758,
+    "n": 538,
+    "per_family": {
+      "amazon": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "dmv": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "ftc_agent": {
+        "recall": 1.0,
+        "n": 14
+      },
+      "irs_refund": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "job_check": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "jury_duty": {
+        "recall": 0.9857,
+        "n": 70
+      },
+      "task_job": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "toll": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "voter": {
+        "recall": 1.0,
+        "n": 70
+      },
+      "whatsapp_code": {
+        "recall": 1.0,
+        "n": 11
+      },
+      "wrong_number": {
+        "recall": 0.0,
+        "n": 12
+      }
+    }
+  },
+  "raw_form_stress_test": {
+    "n": 2365,
+    "v4_recall_raw_form": 0.9628,
+    "v5_recall_raw_form": 0.9463
+  },
+  "test_transactional_once": {
+    "v5": {
+      "threshold": 0.77,
+      "legit_fp_rate": 0.0035,
+      "legit_n": 285,
+      "legit_fp_count": 1,
+      "scam_recall": 1.0,
+      "scam_n": 111,
+      "per_category": {
+        "appointment": {
+          "legit_fp_rate": 0.0,
+          "n_legit": 53
+        },
+        "appointment_phish": {
+          "scam_recall": 1.0,
+          "n_scam": 55
+        },
+        "bank_alert": {
+          "legit_fp_rate": 1.0,
+          "n_legit": 1
+        },
+        "bank_alert_phish": {
+          "scam_recall": 1.0,
+          "n_scam": 55
+        },
+        "code_ask": {
+          "scam_recall": 1.0,
+          "n_scam": 1
+        },
+        "code_inform": {
+          "legit_fp_rate": 0.0,
+          "n_legit": 55
+        },
+        "misc_txn": {
+          "legit_fp_rate": 0.0,
+          "n_legit": 55
+        },
+        "pharmacy": {
+          "legit_fp_rate": 0.0,
+          "n_legit": 33
+        },
+        "school": {
+          "legit_fp_rate": 0.0,
+          "n_legit": 53
+        },
+        "tracking": {
+          "legit_fp_rate": 0.0,
+          "n_legit": 35
+        }
+      }
+    },
+    "v4_same_rows": {
+      "threshold": 0.7,
+      "legit_fp_rate": 0.5298,
+      "legit_n": 285,
+      "legit_fp_count": 151,
+      "scam_recall": 1.0,
+      "scam_n": 111,
+      "per_category": {
+        "appointment": {
+          "legit_fp_rate": 0.4906,
+          "n_legit": 53
+        },
+        "appointment_phish": {
+          "scam_recall": 1.0,
+          "n_scam": 55
+        },
+        "bank_alert": {
+          "legit_fp_rate": 1.0,
+          "n_legit": 1
+        },
+        "bank_alert_phish": {
+          "scam_recall": 1.0,
+          "n_scam": 55
+        },
+        "code_ask": {
+          "scam_recall": 1.0,
+          "n_scam": 1
+        },
+        "code_inform": {
+          "legit_fp_rate": 1.0,
+          "n_legit": 55
+        },
+        "misc_txn": {
+          "legit_fp_rate": 0.5273,
+          "n_legit": 55
+        },
+        "pharmacy": {
+          "legit_fp_rate": 0.1818,
+          "n_legit": 33
+        },
+        "school": {
+          "legit_fp_rate": 0.0,
+          "n_legit": 53
+        },
+        "tracking": {
+          "legit_fp_rate": 0.9714,
+          "n_legit": 35
+        }
+      }
+    }
+  },
+  "probe_after": {
+    "v4": {
+      "n": 34,
+      "ge_threshold": 26,
+      "ge_0.70": 26,
+      "ge_0.30": 30,
+      "mean_prob": 0.7815
+    },
+    "v5": {
+      "n": 34,
+      "ge_threshold": 1,
+      "ge_0.70": 1,
+      "ge_0.30": 5,
+      "mean_prob": 0.1053
+    }
+  },
+  "comparison_table": [
+    {
+      "version": "v1",
+      "modern_imc25_test_recall": 0.4516,
+      "uci_test_recall": 0.9167,
+      "legit_fpr": 0.0015,
+      "model_bytes": 57541
+    },
+    {
+      "version": "v2",
+      "modern_imc25_test_recall": 0.9569,
+      "uci_test_recall": 0.7604,
+      "legit_fpr": 0.0044,
+      "model_bytes": 62670
+    },
+    {
+      "version": "v3",
+      "modern_imc25_test_recall": 0.9742,
+      "uci_test_recall": 0.9479,
+      "legit_fpr": 0.0029,
+      "raw_form_recall": 0.9328,
+      "model_bytes": 310698
+    },
+    {
+      "version": "v4",
+      "threshold": 0.7,
+      "modern_imc25_test_recall": 0.9772,
+      "uci_test_recall": 0.9479,
+      "legit_fpr": 0.0029,
+      "family2026_test_recall": 0.9777,
+      "raw_form_recall": 0.9628,
+      "txn_legit_fp_rate": 0.5298,
+      "txn_scam_recall": 1.0,
+      "model_bytes": 315715
+    },
+    {
+      "version": "v5",
+      "threshold": 0.77,
+      "modern_imc25_test_recall": 0.9674,
+      "uci_test_recall": 0.9583,
+      "legit_fpr": 0.0029,
+      "family2026_test_recall": 0.9758,
+      "raw_form_recall": 0.9463,
+      "txn_legit_fp_rate": 0.0035,
+      "txn_scam_recall": 1.0,
+      "model_bytes": 316854
+    }
+  ],
+  "model_v5_npz_bytes": 316854,
+  "auto_keep_check": {
+    "rule": "keep v5 if transactional legit FP rate improves and modern/UCI test recall within 1pt of v4",
+    "keep_v5": true
+  }
+}
