@@ -1,5 +1,7 @@
 # Scam Shield — Tiny ML
 
+![Scam Shield — paste a suspicious text, get a plain answer](promo/scam-shield-promo-v2.png)
+
 A micro scam-text classifier for seniors: paste a text message, get a plain-language verdict — **SAFE-LOOKING / SUSPICIOUS / LIKELY SCAM** — plus the words that triggered it. It runs fully offline, on-device, in 0.30 MB. No message ever needs to leave the phone.
 
 Built as part of a micro edge-model pilot: models small enough to train and run on modest hardware, trained only on public data, with full provenance.
