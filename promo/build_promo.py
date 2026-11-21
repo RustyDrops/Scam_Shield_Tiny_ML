@@ -3,7 +3,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scam-shield-promo-v3.png")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scam-shield-promo-v4.png")
 W, H = 1200, 630
 
 NOTO = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
@@ -106,7 +106,7 @@ d.text((LX, 242), "Get a plain answer.", font=F(NOTO, 37), fill=WHITE)
 chips = [
     ("97.8%", " of modern scam texts caught"),
     ("0.44%", " false alarms on legit texts"),
-    ("Works offline", " \u2014 nothing leaves the phone"),
+    ("0.31 MB, works offline", " \u2014 nothing leaves the phone"),
 ]
 cy = 330
 f_b = F(NOTO, 27)

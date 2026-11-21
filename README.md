@@ -1,6 +1,6 @@
 # Scam Shield — Tiny ML
 
-![Scam Shield](promo/scam-shield-promo-v3.png)
+![Scam Shield](promo/scam-shield-promo-v4.png)
 
 A micro scam-text classifier for seniors: paste a text message, get a plain-language verdict — **SAFE-LOOKING / SUSPICIOUS / LIKELY SCAM** — plus the words that triggered it. It runs fully offline, on-device, in 0.31 MB. No message ever needs to leave the phone.
 
@@ -15,6 +15,32 @@ Open `demo/index.html` in any browser — one self-contained file (563 KB), no n
 - Legitimate family message → 0.8% SAFE-LOOKING
 
 The demo's embedded model data (vocabularies, weights, threshold) is byte-identical to `model_v9.npz`, verified programmatically.
+
+## Use it yourself
+
+Three ways, from no-code to code:
+
+**1. In a browser (no install).** Open `demo/index.html` in any browser — one self-contained file, no network calls, no build step. Paste a message and the verdict is computed locally in the page; nothing is uploaded anywhere. This is the easiest way to check a text for someone else, too: the file can be copied to any computer or phone.
+
+**2. From the command line (Python + NumPy only).** `predict_v9.py` is pure-NumPy inference — no sklearn needed at runtime:
+
+```bash
+python3 predict_v9.py "Your bank account is locked, verify now at the link"
+# ('scam/spam', 0.9965, 0.6)
+```
+
+It prints a tuple: the label (`scam/spam` or `legitimate`), the scam probability, and the model's decision threshold (0.6).
+
+**3. As a library in your own Python code.** The same file exposes two functions:
+
+```python
+from predict_v9 import prob_scam, classify
+
+prob_scam("Hi love, are we still meeting at 7?")   # -> 0.1433 (a float, 0 to 1)
+classify("Your verification code is 482916")        # -> ('legitimate', 0.0864, 0.6)
+```
+
+**The model file** is `model_v9.npz` (317,338 bytes — 0.31 MB), a NumPy archive holding the word and character vocabularies, IDF weights, logistic-regression coefficients, intercept, and threshold. `predict_v9.py` loads it from its own directory, so keep the two files together. Earlier model versions (`model.npz` … `model_v5.npz`, each with a matching `predict_v*.py`) are kept in the repo for comparison.
 
 ## The model (v9 — current)
 
@@ -37,6 +63,14 @@ Versions v6–v8 were built and rejected under pre-registered gates (documented 
 
 **v9 (conversational scams):** v8's fresh exam exposed a whole register neither model could read — conversational, emotional scams with few links or keywords. v9 changes **no recipe settings at all**; it only adds training data: romance and fake-grandparent ("emergency, don't tell Mum") scam families built the v4 way from public FTC/IC3 sources, plus matching legitimate chat-style messages so ordinary conversation doesn't start flagging. On template-disjoint test splits of those families, recall went from v5's **1.4%** to **97.1% (romance)** and **98.6% (grandparent)**. Fresh never-seen families (charity relief, package delivery): **94.3%** vs v5's 90.0%. Obfuscated-text recall: **93.5%** vs 92.0%. Raw-form stress recall: **95.6%** vs 94.6%. Transactional false alarms stayed at **0.35%** with 100% transactional scam recall. Known remaining gap: a lone "wrong number" opener ("Hi, is this Mark?") scores 0% for every version so far — by itself that message is genuinely ambiguous, and flagging it would mean false-alarming innocent wrong-number texts; the follow-up pitch is the detectable part.
 
+## How this compares
+
+Published results on the **UCI SMS Spam Collection alone** reach [99.48% accuracy](https://www.techscience.com/iasc/v39n4/57819/html) (a hierarchical RoBERTa + CNN + BiLSTM fusion model, *Intelligent Automation & Soft Computing*) and 99.68% (a BERT + CNN + BiLSTM fusion model, Research Square preprint). A rigorous 5-fold cross-validated classical baseline on the same dataset gets [98.74% accuracy with a spam F1 of 0.9538](https://pypi.org/project/LexiDecay/) (LexiDecay). Those are large transformer stacks (or, for the classical baseline, a single-distribution fit) tested on one 2011-era distribution.
+
+Scam Shield v9 is a **0.31 MB logistic-regression model** — no transformers, no embeddings, runs offline in a browser — scored instead across the modern smishing families those papers never test: unpaid tolls, DMV tickets, IRS refunds, delivery fees, bank impersonation, and conversational romance/grandparent scams. On that modern data it catches **97.8%** of scam texts at a **0.44%** false-alarm rate on legitimate messages (and 0.35% on modern transactional texts specifically). In plain terms: it trades a few headline points against transformer stacks for a model roughly a thousand times smaller that keeps every message private and on-device.
+
+The known weakness, stated plainly: **bank-register false positives are 0.6211 on the bank slice** — formal, real bank messages are its hardest legitimate class and get flagged far too often. No published comparable figure exists for that slice, so there is no honest league table for the thing it is worst at. A lone "wrong number" opener ("Hi, is this Mark?") scores ~0% for every version so far; by itself that message is genuinely ambiguous.
+
 ## Honest limits
 
 - Modern recall is optimistic: the 2025 dataset masks URLs and phone numbers with placeholders, unlike raw real-world texts.
@@ -58,13 +92,7 @@ No AI-model output (Claude/Muse, OpenAI, or otherwise) was used as training data
 - `train.py` … `train_v9.py` — training scripts; `gen_v4_data.py`, `augment_v4.py`, `seeds_v4.json` — 2026-family data generation; `gen_v5_data.py`, `probe_legit.py` — transactional data + the legit-probe that exposed v4's flaw; `gen_v9_data.py`, `seeds_v9.json` — conversational-scam data generation
 - `model.npz`, `model_v2.npz`, `model_v3.npz`, `model_v4.npz`, `model_v5.npz` — earlier versions, kept for comparison; `model_head.onnx` — v1 ONNX head experiment
 - `demo/index.html` — the offline browser demo (v9 model embedded); `demo/build_demo.py` — its builder
-- `promo/scam-shield-promo-v3.png` — the card at the top of this README; `promo/build_promo.py` — its code-drawn builder (Pillow, no AI imagery)
+- `promo/scam-shield-promo-v4.png` — the card at the top of this README; `promo/build_promo.py` — its code-drawn builder (Pillow, no AI imagery)
 - `PROVENANCE.md` — dataset licenses, exclusions, and per-version training record
-
-## Run it (Python)
-
-```bash
-python3 predict_v9.py "Your bank account is locked, verify now at the link"
-```
 
 Datasets are not redistributed in this repo; the training scripts reference their public sources (see `PROVENANCE.md`).
